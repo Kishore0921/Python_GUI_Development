@@ -283,7 +283,7 @@ python GUI_Calculator.py
 
 ### Learning Topics
 
-* [ ] 01_Tkinter_Basics
+* [x] 01_Tkinter_Basics
 * [ ] 02_Windows
 * [ ] 03_Labels
 * [ ] 04_Buttons
