@@ -33,10 +33,7 @@ Window States:
 - zoomed: Window maximized on supported platforms.
 """
 
-
-# ============================================================
 # 2. IMPORTS
-# ============================================================
 
 import tkinter as tk
 
@@ -44,46 +41,25 @@ import tkinter as tk
 # tk is an alias used to access Tkinter classes and methods.
 
 
-# ============================================================
 # 3. WORKING EXAMPLE — WINDOW MANAGEMENT
-# ============================================================
 
-# Create the main application window.
-root = tk.Tk()
-
-# ------------------------------------------------------------
-# A. TITLE
-# ------------------------------------------------------------
+root = tk.Tk() # Create the main application window.
 
 root.title("Tkinter Window Management")
 
-# ------------------------------------------------------------
-# B. WIDTH, HEIGHT AND POSITION
-# ------------------------------------------------------------
-
-# Format: "widthxheight+x_position+y_position"
-root.geometry("700x450+100+80")
+root.geometry("700x450+100+80") # Format: "widthxheight+x_position+y_position"
 
 # Width  = 700 pixels
 # Height = 450 pixels
 # X      = 100 pixels from the left of the screen
 # Y      = 80 pixels from the top of the screen
 
-# ------------------------------------------------------------
-# C. RESIZABLE WINDOW
-# ------------------------------------------------------------
-
-# Allow resizing in both directions.
-root.resizable(True, True)
+root.resizable(True, True) # Allow resizing in both directions.
 
 # Other possible configurations:
 # root.resizable(False, False)  # Disable all resizing
 # root.resizable(True, False)   # Allow width resizing only
 # root.resizable(False, True)   # Allow height resizing only
-
-# ------------------------------------------------------------
-# D. MINIMUM AND MAXIMUM WINDOW SIZE
-# ------------------------------------------------------------
 
 root.minsize(400, 300)
 root.maxsize(1000, 700)
@@ -91,40 +67,20 @@ root.maxsize(1000, 700)
 # The window cannot be manually resized below 400x300
 # or above 1000x700 under normal window-manager behavior.
 
-# ------------------------------------------------------------
-# E. WINDOW BACKGROUND COLOR
-# ------------------------------------------------------------
-
 root.configure(bg="lightblue")
 
 # config() is an alias for configure().
 # Example: root.config(bg="lightyellow")
-
-# ------------------------------------------------------------
-# F. WINDOW ICON
-# ------------------------------------------------------------
-
 # To set a custom icon, place app.ico in the same directory
 # and uncomment the following line:
 # root.iconbitmap("app.ico")
 
-# ------------------------------------------------------------
-# G. WINDOW STATE
-# ------------------------------------------------------------
-
-# Start in the normal window state.
-root.state("normal")
+root.state("normal") # Start in the normal window state.
 
 # Other states to test individually:
 # root.state("iconic")  # Minimize
 # root.state("zoomed")  # Maximize on supported platforms
-
-# Print the current window state in the terminal.
-print("Current window state:", root.state())
-
-# ------------------------------------------------------------
-# H. CLOSE THE WINDOW
-# ------------------------------------------------------------
+print("Current window state:", root.state()) # Print the current window state in the terminal.
 
 # Define a function to close the application.
 def close_window():
@@ -135,16 +91,10 @@ def close_window():
 # remain open until you close it manually.
 root.after(30000, close_window)
 
-# ------------------------------------------------------------
-# I. START THE EVENT LOOP
-# ------------------------------------------------------------
-
 root.mainloop()
 
 
-# ============================================================
 # 4. IMPORTANT THINGS TO BE MEMORIZED
-# ============================================================
 
 """
 Syntax                              Meaning
