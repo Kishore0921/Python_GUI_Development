@@ -286,7 +286,7 @@ python GUI_Calculator.py
 * [x] 01_Tkinter_Basics
 * [x] 02_Windows
 * [x] 03_Labels
-* [ ] 04_Buttons
+* [x] 04_Buttons
 * [ ] 05_Entry_Fields
 * [ ] 06_Layout_Management
 * [ ] 07_Frames
