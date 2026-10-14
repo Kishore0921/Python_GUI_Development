@@ -287,7 +287,7 @@ python GUI_Calculator.py
 * [x] 02_Windows
 * [x] 03_Labels
 * [x] 04_Buttons
-* [ ] 05_Entry_Fields
+* [x] 05_Entry_Fields
 * [ ] 06_Layout_Management
 * [ ] 07_Frames
 * [ ] 08_Checkbuttons
