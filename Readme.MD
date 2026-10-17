@@ -289,7 +289,7 @@ python GUI_Calculator.py
 * [x] 04_Buttons
 * [x] 05_Entry_Fields
 * [x] 06_Layout_Management
-* [ ] 07_Frames
+* [x] 07_Frames
 * [ ] 08_Checkbuttons
 * [ ] 09_Radiobuttons
 * [ ] 10_Dropdown_Combobox
