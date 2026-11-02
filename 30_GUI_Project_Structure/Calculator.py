@@ -4,7 +4,7 @@ import tkinter as tk
 # 1. Create and configure the main window
 root = tk.Tk()
 root.title("Python GUI Calculator")
-root.geometry("500x550")
+root.geometry("500x600")
 root.configure(bg="lightgreen")
 root.resizable(True, False)
 root.minsize(350, 450)
@@ -87,14 +87,43 @@ second_entry = tk.Entry(
 second_entry.grid(row=1, column=1, padx=5, pady=5)
 
 
-# 4. Create the result label
+# 4. Create the checkbutton frame
+options_frame = tk.Frame(root, bg="lightgreen")
+options_frame.pack(pady=5)
+
+# Create Boolean variables
+round_var = tk.BooleanVar()
+details_var = tk.BooleanVar()
+
+# Create Round Result checkbutton
+round_check = tk.Checkbutton(
+    options_frame,
+    text="Round Result",
+    variable=round_var,
+    bg="lightgreen",
+    font=("Arial", 10)
+)
+round_check.pack(side="left", padx=10)
+
+# Create Show Calculation checkbutton
+details_check = tk.Checkbutton(
+    options_frame,
+    text="Show Calculation",
+    variable=details_var,
+    bg="lightgreen",
+    font=("Arial", 10)
+)
+details_check.pack(side="left", padx=10)
+
+
+# 5. Create the result label
 result_label = tk.Label(
     root,
     text="Result:",
     font=("Arial", 14, "bold"),
     fg="#196f3d",
     bg="white",
-    width=30,
+    width=35,
     height=2,
     relief="ridge",
     bd=2
@@ -102,7 +131,7 @@ result_label = tk.Label(
 result_label.pack(pady=10)
 
 
-# 5. Define the calculator function
+# 6. Define the calculator function
 def calculate(operation):
     try:
         num1 = float(first_entry.get())
@@ -124,10 +153,21 @@ def calculate(operation):
 
             result = num1 / num2
 
-        result_label.config(
-            text=f"Result: {result:g}",
-            fg="#196f3d"
-        )
+        # Round the result if selected
+        if round_var.get():
+            result = round(result, 2)
+
+        # Display the calculation if selected
+        if details_var.get():
+            result_label.config(
+                text=f"{num1:g} {operation} {num2:g} = {result:g}",
+                fg="#196f3d"
+            )
+        else:
+            result_label.config(
+                text=f"Result: {result:g}",
+                fg="#196f3d"
+            )
 
     except ValueError:
         result_label.config(
@@ -136,10 +176,13 @@ def calculate(operation):
         )
 
 
-# 6. Define the clear function
+# 7. Define the clear function
 def clear_fields():
     first_entry.delete(0, tk.END)
     second_entry.delete(0, tk.END)
+
+    round_var.set(False)
+    details_var.set(False)
 
     result_label.config(
         text="Result:",
@@ -151,7 +194,7 @@ def clear_fields():
     )
 
 
-# 7. Create the button frame
+# 8. Create the button frame
 button_frame = tk.Frame(root, bg="lightgreen")
 button_frame.pack(pady=5)
 
@@ -175,7 +218,7 @@ for column, (symbol, operation) in enumerate(operations):
     button.grid(row=0, column=column, padx=5, pady=5)
 
 
-# 8. Create the footer frame
+# 9. Create the footer frame
 footer_frame = tk.Frame(root, bg="lightgreen")
 footer_frame.pack(pady=5)
 
@@ -200,5 +243,5 @@ close_button = tk.Button(
 close_button.pack(side="left", padx=10)
 
 
-# 9. Start the Tkinter event loop
+# 10. Start the Tkinter event loop
 root.mainloop()
