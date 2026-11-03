@@ -4,7 +4,7 @@ import tkinter as tk
 # 1. Create and configure the main window
 root = tk.Tk()
 root.title("Python GUI Calculator")
-root.geometry("500x600")
+root.geometry("500x650")
 root.configure(bg="lightgreen")
 root.resizable(True, False)
 root.minsize(350, 450)
@@ -87,7 +87,47 @@ second_entry = tk.Entry(
 second_entry.grid(row=1, column=1, padx=5, pady=5)
 
 
-# 4. Create the checkbutton frame
+# 4. Create the radiobutton frame
+operation_frame = tk.Frame(
+    root,
+    bg="lightgreen",
+    relief="groove",
+    bd=2,
+    padx=10,
+    pady=5
+)
+operation_frame.pack(pady=5)
+
+# Create a StringVar for operation selection
+operation_var = tk.StringVar(value="+")
+
+# Create operation radiobuttons
+tk.Label(
+    operation_frame,
+    text="Select Operation:",
+    font=("Arial", 11, "bold"),
+    bg="lightgreen"
+).pack()
+
+operations = [
+    ("Addition (+)", "+"),
+    ("Subtraction (-)", "-"),
+    ("Multiplication (×)", "*"),
+    ("Division (÷)", "/")
+]
+
+for text, value in operations:
+    tk.Radiobutton(
+        operation_frame,
+        text=text,
+        variable=operation_var,
+        value=value,
+        bg="lightgreen",
+        font=("Arial", 10)
+    ).pack(anchor="w")
+
+
+# 5. Create the checkbutton frame
 options_frame = tk.Frame(root, bg="lightgreen")
 options_frame.pack(pady=5)
 
@@ -96,27 +136,25 @@ round_var = tk.BooleanVar()
 details_var = tk.BooleanVar()
 
 # Create Round Result checkbutton
-round_check = tk.Checkbutton(
+tk.Checkbutton(
     options_frame,
     text="Round Result",
     variable=round_var,
     bg="lightgreen",
     font=("Arial", 10)
-)
-round_check.pack(side="left", padx=10)
+).pack(side="left", padx=10)
 
 # Create Show Calculation checkbutton
-details_check = tk.Checkbutton(
+tk.Checkbutton(
     options_frame,
     text="Show Calculation",
     variable=details_var,
     bg="lightgreen",
     font=("Arial", 10)
-)
-details_check.pack(side="left", padx=10)
+).pack(side="left", padx=10)
 
 
-# 5. Create the result label
+# 6. Create the result label
 result_label = tk.Label(
     root,
     text="Result:",
@@ -131,11 +169,13 @@ result_label = tk.Label(
 result_label.pack(pady=10)
 
 
-# 6. Define the calculator function
-def calculate(operation):
+# 7. Define the calculator function
+def calculate():
     try:
         num1 = float(first_entry.get())
         num2 = float(second_entry.get())
+
+        operation = operation_var.get()
 
         if operation == "+":
             result = num1 + num2
@@ -176,11 +216,12 @@ def calculate(operation):
         )
 
 
-# 7. Define the clear function
+# 8. Define the clear function
 def clear_fields():
     first_entry.delete(0, tk.END)
     second_entry.delete(0, tk.END)
 
+    operation_var.set("+")
     round_var.set(False)
     details_var.set(False)
 
@@ -194,37 +235,23 @@ def clear_fields():
     )
 
 
-# 8. Create the button frame
+# 9. Create the button frame
 button_frame = tk.Frame(root, bg="lightgreen")
 button_frame.pack(pady=5)
 
-# Create arithmetic operation buttons using grid()
-operations = [
-    ("+", "+"),
-    ("-", "-"),
-    ("×", "*"),
-    ("÷", "/")
-]
+# Create the Calculate button
+calculate_button = tk.Button(
+    button_frame,
+    text="Calculate",
+    font=("Arial", 12, "bold"),
+    bg="lightblue",
+    command=calculate
+)
+calculate_button.pack(side="left", padx=10)
 
-for column, (symbol, operation) in enumerate(operations):
-    button = tk.Button(
-        button_frame,
-        text=symbol,
-        font=("Arial", 14, "bold"),
-        width=5,
-        bg="lightblue",
-        command=lambda op=operation: calculate(op)
-    )
-    button.grid(row=0, column=column, padx=5, pady=5)
-
-
-# 9. Create the footer frame
-footer_frame = tk.Frame(root, bg="lightgreen")
-footer_frame.pack(pady=5)
-
-# Create the clear button
+# Create the Clear button
 clear_button = tk.Button(
-    footer_frame,
+    button_frame,
     text="Clear",
     font=("Arial", 11, "bold"),
     bg="orange",
@@ -232,7 +259,12 @@ clear_button = tk.Button(
 )
 clear_button.pack(side="left", padx=10)
 
-# Create the close button
+
+# 10. Create the footer frame
+footer_frame = tk.Frame(root, bg="lightgreen")
+footer_frame.pack(pady=5)
+
+# Create the Close button
 close_button = tk.Button(
     footer_frame,
     text="Close Calculator",
@@ -240,8 +272,8 @@ close_button = tk.Button(
     bg="tomato",
     command=root.destroy
 )
-close_button.pack(side="left", padx=10)
+close_button.pack(padx=10)
 
 
-# 10. Start the Tkinter event loop
+# 11. Start the Tkinter event loop
 root.mainloop()
