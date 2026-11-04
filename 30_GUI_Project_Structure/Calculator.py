@@ -1,5 +1,5 @@
-
 import tkinter as tk
+from tkinter import ttk
 
 # 1. Create and configure the main window
 root = tk.Tk()
@@ -87,44 +87,45 @@ second_entry = tk.Entry(
 second_entry.grid(row=1, column=1, padx=5, pady=5)
 
 
-# 4. Create the radiobutton frame
+# 4. Create the dropdown operation frame
 operation_frame = tk.Frame(
     root,
     bg="lightgreen",
     relief="groove",
     bd=2,
     padx=10,
-    pady=5
+    pady=10
 )
 operation_frame.pack(pady=5)
 
-# Create a StringVar for operation selection
-operation_var = tk.StringVar(value="+")
-
-# Create operation radiobuttons
+# Create the operation label
 tk.Label(
     operation_frame,
     text="Select Operation:",
     font=("Arial", 11, "bold"),
     bg="lightgreen"
-).pack()
+).pack(pady=5)
 
+# Define dropdown operation values
 operations = [
-    ("Addition (+)", "+"),
-    ("Subtraction (-)", "-"),
-    ("Multiplication (×)", "*"),
-    ("Division (÷)", "/")
+    "Addition (+)",
+    "Subtraction (-)",
+    "Multiplication (×)",
+    "Division (÷)"
 ]
 
-for text, value in operations:
-    tk.Radiobutton(
-        operation_frame,
-        text=text,
-        variable=operation_var,
-        value=value,
-        bg="lightgreen",
-        font=("Arial", 10)
-    ).pack(anchor="w")
+# Create the Combobox
+operation_combo = ttk.Combobox(
+    operation_frame,
+    values=operations,
+    font=("Arial", 10),
+    width=25,
+    state="readonly"
+)
+operation_combo.pack(pady=5)
+
+# Select Addition by default
+operation_combo.current(0)
 
 
 # 5. Create the checkbutton frame
@@ -175,15 +176,24 @@ def calculate():
         num1 = float(first_entry.get())
         num2 = float(second_entry.get())
 
-        operation = operation_var.get()
+        # Retrieve selected operation from dropdown
+        selected_operation = operation_combo.get()
 
-        if operation == "+":
+        if selected_operation == "Addition (+)":
+            operation = "+"
             result = num1 + num2
-        elif operation == "-":
+
+        elif selected_operation == "Subtraction (-)":
+            operation = "-"
             result = num1 - num2
-        elif operation == "*":
+
+        elif selected_operation == "Multiplication (×)":
+            operation = "*"
             result = num1 * num2
-        elif operation == "/":
+
+        elif selected_operation == "Division (÷)":
+            operation = "/"
+
             if num2 == 0:
                 result_label.config(
                     text="Cannot divide by zero",
@@ -192,6 +202,13 @@ def calculate():
                 return
 
             result = num1 / num2
+
+        else:
+            result_label.config(
+                text="Please select an operation",
+                fg="red"
+            )
+            return
 
         # Round the result if selected
         if round_var.get():
@@ -221,7 +238,9 @@ def clear_fields():
     first_entry.delete(0, tk.END)
     second_entry.delete(0, tk.END)
 
-    operation_var.set("+")
+    # Reset dropdown to Addition
+    operation_combo.current(0)
+
     round_var.set(False)
     details_var.set(False)
 
