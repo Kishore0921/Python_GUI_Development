@@ -293,7 +293,7 @@ python GUI_Calculator.py
 * [x] 08_Checkbuttons
 * [x] 09_Radiobuttons
 * [x] 10_Dropdown_Combobox
-* [ ] 11_Listbox
+* [x] 11_Listbox
 * [ ] 12_Text_Box
 * [ ] 13_Spinbox
 * [ ] 14_Scale
