@@ -4,11 +4,11 @@ from tkinter import ttk
 # 1. Create and configure the main window
 root = tk.Tk()
 root.title("Python GUI Calculator")
-root.geometry("500x650")
+root.geometry("500x750")
 root.configure(bg="lightgreen")
 root.resizable(True, False)
-root.minsize(350, 450)
-root.maxsize(800, 800)
+root.minsize(350, 600)
+root.maxsize(800, 900)
 root.state("normal")
 
 print("Current window state:", root.state())
@@ -170,7 +170,57 @@ result_label = tk.Label(
 result_label.pack(pady=10)
 
 
-# 7. Define the calculator function
+# 7. Create the calculation history Listbox
+history_frame = tk.Frame(
+    root,
+    bg="lightgreen",
+    relief="groove",
+    bd=2,
+    padx=10,
+    pady=5
+)
+history_frame.pack(padx=20, pady=5, fill="x")
+
+# Create history label
+tk.Label(
+    history_frame,
+    text="Calculation History",
+    font=("Arial", 12, "bold"),
+    bg="lightgreen"
+).pack(pady=5)
+
+# Create Listbox
+history_listbox = tk.Listbox(
+    history_frame,
+    width=45,
+    height=5,
+    font=("Arial", 10),
+    selectmode=tk.SINGLE
+)
+history_listbox.pack(pady=5)
+
+
+# Define function to display selected history
+def show_history(event):
+    selected_indexes = history_listbox.curselection()
+
+    if selected_indexes:
+        selected_calculation = history_listbox.get(selected_indexes[0])
+
+        result_label.config(
+            text=selected_calculation,
+            fg="#196f3d"
+        )
+
+
+# Connect Listbox selection event
+history_listbox.bind(
+    "<<ListboxSelect>>",
+    show_history
+)
+
+
+# 8. Define the calculator function
 def calculate():
     try:
         num1 = float(first_entry.get())
@@ -214,10 +264,13 @@ def calculate():
         if round_var.get():
             result = round(result, 2)
 
+        # Create calculation text
+        calculation = f"{num1:g} {operation} {num2:g} = {result:g}"
+
         # Display the calculation if selected
         if details_var.get():
             result_label.config(
-                text=f"{num1:g} {operation} {num2:g} = {result:g}",
+                text=calculation,
                 fg="#196f3d"
             )
         else:
@@ -226,6 +279,9 @@ def calculate():
                 fg="#196f3d"
             )
 
+        # Add calculation to history
+        history_listbox.insert(tk.END, calculation)
+
     except ValueError:
         result_label.config(
             text="Enter valid numbers",
@@ -233,12 +289,11 @@ def calculate():
         )
 
 
-# 8. Define the clear function
+# 9. Define the clear function
 def clear_fields():
     first_entry.delete(0, tk.END)
     second_entry.delete(0, tk.END)
 
-    # Reset dropdown to Addition
     operation_combo.current(0)
 
     round_var.set(False)
@@ -254,7 +309,30 @@ def clear_fields():
     )
 
 
-# 9. Create the button frame
+# Define function to remove selected history
+def remove_history():
+    selected_indexes = history_listbox.curselection()
+
+    for index in reversed(selected_indexes):
+        history_listbox.delete(index)
+
+    result_label.config(
+        text="Result:",
+        fg="#196f3d"
+    )
+
+
+# Define function to clear all history
+def clear_history():
+    history_listbox.delete(0, tk.END)
+
+    result_label.config(
+        text="Result:",
+        fg="#196f3d"
+    )
+
+
+# 10. Create the button frame
 button_frame = tk.Frame(root, bg="lightgreen")
 button_frame.pack(pady=5)
 
@@ -272,14 +350,37 @@ calculate_button.pack(side="left", padx=10)
 clear_button = tk.Button(
     button_frame,
     text="Clear",
-    font=("Arial", 11, "bold"),
+    font=("Arial", 11),
     bg="orange",
     command=clear_fields
 )
 clear_button.pack(side="left", padx=10)
 
 
-# 10. Create the footer frame
+# 11. Create the history button frame
+history_button_frame = tk.Frame(root, bg="lightgreen")
+history_button_frame.pack(pady=5)
+
+# Create the remove history button
+remove_button = tk.Button(
+    history_button_frame,
+    text="Remove Selected",
+    font=("Arial", 10),
+    command=remove_history
+)
+remove_button.pack(side="left", padx=5)
+
+# Create the clear history button
+clear_history_button = tk.Button(
+    history_button_frame,
+    text="Clear History",
+    font=("Arial", 10),
+    command=clear_history
+)
+clear_history_button.pack(side="left", padx=5)
+
+
+# 12. Create the footer frame
 footer_frame = tk.Frame(root, bg="lightgreen")
 footer_frame.pack(pady=5)
 
@@ -294,5 +395,5 @@ close_button = tk.Button(
 close_button.pack(padx=10)
 
 
-# 11. Start the Tkinter event loop
+# 13. Start the Tkinter event loop
 root.mainloop()
