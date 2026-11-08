@@ -295,7 +295,7 @@ python GUI_Calculator.py
 * [x] 10_Dropdown_Combobox
 * [x] 11_Listbox
 * [x] 12_Text_Box
-* [ ] 13_Spinbox
+* [x] 13_Spinbox
 * [ ] 14_Scale
 * [ ] 15_Message_Boxes
 * [ ] 16_Menus
