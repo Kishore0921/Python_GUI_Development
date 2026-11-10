@@ -1,6 +1,6 @@
 
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox
 
 # 1. Main Window
 root = tk.Tk()
@@ -36,39 +36,64 @@ canvas.bind_all(
 )
 
 # 3. Header
+header_frame = tk.Frame(main_frame, bg="lightgreen")
+header_frame.pack(fill="x", padx=10, pady=5)
+
 tk.Label(
-    main_frame,
+    header_frame,
     text="Python GUI Calculator",
     font=("Arial", 20, "bold"),
     fg="#154360",
-    bg="lightgreen"
-).pack(pady=10)
-
-tk.Label(
-    main_frame,
-    text="Enter two numbers and select an operation.",
-    bg="white",
-    font=("Arial", 11),
+    bg="lightgreen",
     padx=10,
-    pady=5
+    pady=10
 ).pack(pady=5)
 
-# 4. Input Fields
-input_frame = tk.Frame(main_frame, bg="lightgreen")
-input_frame.pack(pady=10)
-
-tk.Label(input_frame, text="First Number:", bg="lightgreen").grid(
-    row=0, column=0, padx=5, pady=5
+description_label = tk.Label(
+    header_frame,
+    text="Enter two numbers and select an operation.",
+    font=("Times New Roman", 12),
+    fg="#212f3c",
+    bg="white",
+    relief="sunken",
+    bd=2,
+    padx=10,
+    pady=5
 )
+description_label.pack(pady=5)
 
-first_entry = tk.Entry(input_frame, width=25, justify="center")
+# 4. Input Fields
+input_frame = tk.Frame(main_frame, bg="lightgreen", padx=10, pady=5)
+input_frame.pack(pady=5)
+
+tk.Label(
+    input_frame,
+    text="First Number:",
+    font=("Arial", 11),
+    bg="lightgreen"
+).grid(row=0, column=0, padx=5, pady=5, sticky="w")
+
+first_entry = tk.Entry(
+    input_frame,
+    font=("Arial", 12),
+    width=25,
+    justify="center"
+)
 first_entry.grid(row=0, column=1, padx=5, pady=5)
 
-tk.Label(input_frame, text="Second Number:", bg="lightgreen").grid(
-    row=1, column=0, padx=5, pady=5
-)
+tk.Label(
+    input_frame,
+    text="Second Number:",
+    font=("Arial", 11),
+    bg="lightgreen"
+).grid(row=1, column=0, padx=5, pady=5, sticky="w")
 
-second_entry = tk.Entry(input_frame, width=25, justify="center")
+second_entry = tk.Entry(
+    input_frame,
+    font=("Arial", 12),
+    width=25,
+    justify="center"
+)
 second_entry.grid(row=1, column=1, padx=5, pady=5)
 
 # 5. Operation Dropdown
@@ -82,18 +107,19 @@ operations = [
 operation_combo = ttk.Combobox(
     main_frame,
     values=operations,
-    state="readonly",
-    width=25
+    font=("Arial", 10),
+    width=25,
+    state="readonly"
 )
 operation_combo.pack(pady=10)
 operation_combo.current(0)
 
 # 6. Checkbuttons
-round_var = tk.BooleanVar()
-details_var = tk.BooleanVar()
-
 options_frame = tk.Frame(main_frame, bg="lightgreen")
 options_frame.pack(pady=5)
+
+round_var = tk.BooleanVar()
+details_var = tk.BooleanVar()
 
 tk.Checkbutton(
     options_frame,
@@ -148,22 +174,27 @@ result_label = tk.Label(
     bg="white",
     width=35,
     height=2,
-    relief="ridge"
+    relief="ridge",
+    bd=2
 )
 result_label.pack(pady=10)
 
 # 9. Calculation History
+history_frame = tk.Frame(main_frame, bg="lightgreen")
+history_frame.pack(padx=20, pady=5, fill="x")
+
 tk.Label(
-    main_frame,
+    history_frame,
     text="Calculation History",
     font=("Arial", 12, "bold"),
     bg="lightgreen"
 ).pack(pady=5)
 
 history_listbox = tk.Listbox(
-    main_frame,
+    history_frame,
     width=45,
-    height=5
+    height=5,
+    font=("Arial", 10)
 )
 history_listbox.pack(pady=5)
 
@@ -172,7 +203,8 @@ def show_history(event):
 
     if selected:
         result_label.config(
-            text=history_listbox.get(selected[0])
+            text=history_listbox.get(selected[0]),
+            fg="#196f3d"
         )
 
 history_listbox.bind("<<ListboxSelect>>", show_history)
@@ -201,6 +233,10 @@ def calculate():
             symbol = "/"
 
             if num2 == 0:
+                messagebox.showerror(
+                    "Division Error",
+                    "Cannot divide by zero!"
+                )
                 result_label.config(
                     text="Cannot divide by zero",
                     fg="red"
@@ -210,9 +246,9 @@ def calculate():
             answer = num1 / num2
 
         else:
-            result_label.config(
-                text="Select an operation",
-                fg="red"
+            messagebox.showwarning(
+                "Operation",
+                "Please select an operation."
             )
             return
 
@@ -222,113 +258,248 @@ def calculate():
         calculation = f"{num1:g} {symbol} {num2:g} = {answer:g}"
 
         if details_var.get():
-            result_label.config(text=calculation, fg="#196f3d")
+            result_label.config(
+                text=calculation,
+                fg="#196f3d"
+            )
         else:
-            result_label.config(text=f"Result: {answer:g}", fg="#196f3d")
+            result_label.config(
+                text=f"Result: {answer:g}",
+                fg="#196f3d"
+            )
 
         history_listbox.insert(tk.END, calculation)
 
     except ValueError:
-        result_label.config(text="Enter valid numbers", fg="red")
+        result_label.config(
+            text="Enter valid numbers",
+            fg="red"
+        )
 
-# 11. Clear Functions
+        retry = messagebox.askretrycancel(
+            "Invalid Input",
+            "Please enter valid numbers. Would you like to try again?"
+        )
+
+        if retry:
+            first_entry.focus_set()
+
+# 11. Clear Calculator Fields
 def clear_fields():
-    first_entry.delete(0, tk.END)
-    second_entry.delete(0, tk.END)
+    answer = messagebox.askyesno(
+        "Clear Calculator",
+        "Do you want to clear all calculator fields?"
+    )
 
-    operation_combo.current(0)
-    round_var.set(False)
-    details_var.set(False)
-    precision_scale.set(2)
+    if answer:
+        first_entry.delete(0, tk.END)
+        second_entry.delete(0, tk.END)
 
-    result_label.config(text="Result:", fg="#196f3d")
+        operation_combo.current(0)
+        round_var.set(False)
+        details_var.set(False)
+        precision_scale.set(2)
 
+        result_label.config(
+            text="Result:",
+            fg="#196f3d"
+        )
+
+        description_label.config(
+            text="Enter two numbers and select an operation."
+        )
+
+        messagebox.showinfo(
+            "Cleared",
+            "Calculator fields cleared successfully!"
+        )
+
+# 12. History Functions
 def remove_history():
-    for index in reversed(history_listbox.curselection()):
-        history_listbox.delete(index)
+    selected = history_listbox.curselection()
+
+    if not selected:
+        messagebox.showwarning(
+            "No Selection",
+            "Please select a history item to remove."
+        )
+        return
+
+    answer = messagebox.askyesno(
+        "Remove History",
+        "Do you want to remove the selected calculation?"
+    )
+
+    if answer:
+        for index in reversed(selected):
+            history_listbox.delete(index)
+
+        result_label.config(text="Result:", fg="#196f3d")
+        messagebox.showinfo("Removed", "Selected history removed.")
 
 def clear_history():
-    history_listbox.delete(0, tk.END)
+    if history_listbox.size() == 0:
+        messagebox.showinfo("History", "There is no history to clear.")
+        return
 
-# 12. Calculator Buttons
+    answer = messagebox.askokcancel(
+        "Clear History",
+        "Do you want to delete all calculation history?"
+    )
+
+    if answer:
+        history_listbox.delete(0, tk.END)
+        result_label.config(text="Result:", fg="#196f3d")
+        messagebox.showinfo("Cleared", "Calculation history cleared.")
+
+# 13. Calculator Buttons
 button_frame = tk.Frame(main_frame, bg="lightgreen")
 button_frame.pack(pady=5)
 
 tk.Button(
     button_frame,
     text="Calculate",
-    command=calculate,
-    bg="lightblue"
-).pack(side="left", padx=5)
+    font=("Arial", 12, "bold"),
+    bg="lightblue",
+    command=calculate
+).pack(side="left", padx=10)
 
 tk.Button(
     button_frame,
     text="Clear",
-    command=clear_fields,
-    bg="orange"
-).pack(side="left", padx=5)
+    font=("Arial", 11),
+    bg="orange",
+    command=clear_fields
+).pack(side="left", padx=10)
 
-history_buttons = tk.Frame(main_frame, bg="lightgreen")
-history_buttons.pack(pady=5)
+# 14. History Buttons
+history_button_frame = tk.Frame(main_frame, bg="lightgreen")
+history_button_frame.pack(pady=5)
 
 tk.Button(
-    history_buttons,
+    history_button_frame,
     text="Remove Selected",
     command=remove_history
 ).pack(side="left", padx=5)
 
 tk.Button(
-    history_buttons,
+    history_button_frame,
     text="Clear History",
     command=clear_history
 ).pack(side="left", padx=5)
 
-# 13. Notes Editor
-tk.Label(
+# 15. Notes Editor
+notes_frame = tk.Frame(
     main_frame,
+    bg="lightgreen",
+    relief="groove",
+    bd=2,
+    padx=10,
+    pady=5
+)
+notes_frame.pack(padx=20, pady=5, fill="x")
+
+tk.Label(
+    notes_frame,
     text="Notes Editor",
     font=("Arial", 12, "bold"),
     bg="lightgreen"
 ).pack(pady=5)
 
 notes_text = tk.Text(
-    main_frame,
+    notes_frame,
     width=45,
     height=5,
-    wrap=tk.WORD,
-    font=("Arial", 10)
+    font=("Arial", 10),
+    bg="white",
+    fg="black",
+    wrap=tk.WORD
 )
 notes_text.pack(pady=5)
 
+# Notes Functions
 def save_notes():
     content = notes_text.get("1.0", "end-1c")
-    result_label.config(text="Notes saved!", fg="#196f3d")
+
+    if not content.strip():
+        messagebox.showwarning(
+            "Empty Notes",
+            "Please enter some notes before saving."
+        )
+        return
+
+    messagebox.showinfo(
+        "Notes Saved",
+        "Your notes have been saved successfully!"
+    )
 
 def clear_notes():
-    notes_text.config(state=tk.NORMAL)
-    notes_text.delete("1.0", tk.END)
+    answer = messagebox.askyesno(
+        "Clear Notes",
+        "Do you want to delete all notes?"
+    )
+
+    if answer:
+        notes_text.config(state=tk.NORMAL)
+        notes_text.delete("1.0", tk.END)
+        messagebox.showinfo("Cleared", "Notes cleared successfully.")
 
 def lock_notes():
     notes_text.config(state=tk.DISABLED)
+    messagebox.showinfo("Notes Locked", "Editing is now disabled.")
 
 def unlock_notes():
     notes_text.config(state=tk.NORMAL)
+    messagebox.showinfo("Notes Unlocked", "You can now edit your notes.")
 
-notes_buttons = tk.Frame(main_frame, bg="lightgreen")
-notes_buttons.pack(pady=5)
+# Notes Buttons
+notes_button_frame = tk.Frame(notes_frame, bg="lightgreen")
+notes_button_frame.pack(pady=5)
 
-tk.Button(notes_buttons, text="Save", command=save_notes).pack(side="left", padx=3)
-tk.Button(notes_buttons, text="Clear", command=clear_notes).pack(side="left", padx=3)
-tk.Button(notes_buttons, text="Lock", command=lock_notes).pack(side="left", padx=3)
-tk.Button(notes_buttons, text="Unlock", command=unlock_notes).pack(side="left", padx=3)
-
-# 14. Footer
 tk.Button(
-    main_frame,
-    text="Close Calculator",
-    bg="tomato",
-    command=root.destroy
-).pack(pady=15)
+    notes_button_frame,
+    text="Save Notes",
+    command=save_notes
+).pack(side="left", padx=5)
 
-# 15. Event Loop
+tk.Button(
+    notes_button_frame,
+    text="Clear Notes",
+    command=clear_notes
+).pack(side="left", padx=5)
+
+tk.Button(
+    notes_button_frame,
+    text="Lock",
+    command=lock_notes
+).pack(side="left", padx=5)
+
+tk.Button(
+    notes_button_frame,
+    text="Unlock",
+    command=unlock_notes
+).pack(side="left", padx=5)
+
+# 16. Footer and Exit Confirmation
+def close_calculator():
+    answer = messagebox.askokcancel(
+        "Exit Calculator",
+        "Are you sure you want to close the calculator?"
+    )
+
+    if answer:
+        root.destroy()
+
+footer_frame = tk.Frame(main_frame, bg="lightgreen")
+footer_frame.pack(pady=10)
+
+tk.Button(
+    footer_frame,
+    text="Close Calculator",
+    font=("Arial", 11),
+    bg="tomato",
+    command=close_calculator
+).pack(padx=10)
+
+# 17. Event Loop
 root.mainloop()
