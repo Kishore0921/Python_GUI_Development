@@ -46,7 +46,7 @@ tk.Label(
 
 tk.Label(
     main_frame,
-    text="Enter numbers and select an operation.",
+    text="Enter two numbers and select an operation.",
     bg="white",
     font=("Arial", 11),
     padx=10,
@@ -88,27 +88,7 @@ operation_combo = ttk.Combobox(
 operation_combo.pack(pady=10)
 operation_combo.current(0)
 
-# 6. Quantity Spinbox
-tk.Label(
-    main_frame,
-    text="Select Quantity:",
-    bg="lightgreen",
-    font=("Arial", 11, "bold")
-).pack(pady=5)
-
-quantity_var = tk.StringVar(value="1")
-
-quantity_spinbox = tk.Spinbox(
-    main_frame,
-    from_=1,
-    to=20,
-    increment=1,
-    textvariable=quantity_var,
-    width=10
-)
-quantity_spinbox.pack(pady=5)
-
-# 7. Checkbuttons
+# 6. Checkbuttons
 round_var = tk.BooleanVar()
 details_var = tk.BooleanVar()
 
@@ -128,6 +108,36 @@ tk.Checkbutton(
     variable=details_var,
     bg="lightgreen"
 ).pack(side="left", padx=5)
+
+# 7. Scale - Result Precision
+precision_var = tk.IntVar(value=2)
+
+precision_label = tk.Label(
+    main_frame,
+    text="Decimal Places: 2",
+    bg="lightgreen",
+    font=("Arial", 11, "bold")
+)
+precision_label.pack(pady=5)
+
+def update_precision(value):
+    precision_label.config(
+        text=f"Decimal Places: {int(float(value))}"
+    )
+
+precision_scale = tk.Scale(
+    main_frame,
+    from_=0,
+    to=5,
+    orient=tk.HORIZONTAL,
+    resolution=1,
+    variable=precision_var,
+    command=update_precision,
+    length=250,
+    bg="lightgreen",
+    highlightthickness=0
+)
+precision_scale.pack(pady=5)
 
 # 8. Result
 result_label = tk.Label(
@@ -172,7 +182,6 @@ def calculate():
     try:
         num1 = float(first_entry.get())
         num2 = float(second_entry.get())
-        quantity = int(quantity_spinbox.get())
 
         selected = operation_combo.get()
 
@@ -192,23 +201,25 @@ def calculate():
             symbol = "/"
 
             if num2 == 0:
-                result_label.config(text="Cannot divide by zero", fg="red")
+                result_label.config(
+                    text="Cannot divide by zero",
+                    fg="red"
+                )
                 return
 
             answer = num1 / num2
 
         else:
-            result_label.config(text="Select an operation", fg="red")
+            result_label.config(
+                text="Select an operation",
+                fg="red"
+            )
             return
 
-        answer *= quantity
-
         if round_var.get():
-            answer = round(answer, 2)
+            answer = round(answer, precision_var.get())
 
-        calculation = (
-            f"({num1:g} {symbol} {num2:g}) × {quantity} = {answer:g}"
-        )
+        calculation = f"{num1:g} {symbol} {num2:g} = {answer:g}"
 
         if details_var.get():
             result_label.config(text=calculation, fg="#196f3d")
@@ -218,7 +229,7 @@ def calculate():
         history_listbox.insert(tk.END, calculation)
 
     except ValueError:
-        result_label.config(text="Enter valid values", fg="red")
+        result_label.config(text="Enter valid numbers", fg="red")
 
 # 11. Clear Functions
 def clear_fields():
@@ -226,9 +237,9 @@ def clear_fields():
     second_entry.delete(0, tk.END)
 
     operation_combo.current(0)
-    quantity_var.set("1")
     round_var.set(False)
     details_var.set(False)
+    precision_scale.set(2)
 
     result_label.config(text="Result:", fg="#196f3d")
 
