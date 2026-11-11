@@ -298,7 +298,7 @@ python GUI_Calculator.py
 * [x] 13_Spinbox
 * [x] 14_Scale
 * [x] 15_Message_Boxes
-* [ ] 16_Menus
+* [x] 16_Menus
 * [ ] 17_File_Dialogs
 * [ ] 18_Events
 * [ ] 19_Callbacks
