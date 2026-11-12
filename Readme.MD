@@ -299,7 +299,7 @@ python GUI_Calculator.py
 * [x] 14_Scale
 * [x] 15_Message_Boxes
 * [x] 16_Menus
-* [ ] 17_File_Dialogs
+* [x] 17_File_Dialogs
 * [ ] 18_Events
 * [ ] 19_Callbacks
 * [ ] 20_Multiple_Windows
