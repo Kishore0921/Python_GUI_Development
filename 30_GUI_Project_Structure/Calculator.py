@@ -37,7 +37,56 @@ canvas.bind_all(
     lambda event: canvas.yview_scroll(int(-event.delta / 120), "units")
 )
 
-# 3. Calculator and Menu Functions
+# 3. Event Functions
+
+def mouse_click(event):
+    event_status_label.config(
+        text=f"Left Click | X: {event.x}, Y: {event.y}"
+    )
+
+
+def right_click(event):
+    event_status_label.config(
+        text=f"Right Click | X: {event.x}, Y: {event.y}"
+    )
+
+
+def mouse_move(event):
+    event_status_label.config(
+        text=f"Mouse Position | X: {event.x}, Y: {event.y}"
+    )
+
+
+def key_press(event):
+    event_status_label.config(
+        text=f"Key Pressed: {event.keysym}"
+    )
+
+
+def key_release(event):
+    event_status_label.config(
+        text=f"Key Released: {event.keysym}"
+    )
+
+
+def focus_in(event):
+    event_status_label.config(
+        text=f"Focus In: {event.widget.winfo_class()}"
+    )
+
+
+def focus_out(event):
+    event_status_label.config(
+        text=f"Focus Out: {event.widget.winfo_class()}"
+    )
+
+
+def title_double_click(event):
+    new_calculation()
+    event_status_label.config(text="Double Click: Calculator Reset")
+
+
+# 4. Calculator and Menu Functions
 
 def new_calculation():
     first_entry.delete(0, tk.END)
@@ -146,7 +195,7 @@ def close_calculator():
         root.destroy()
 
 
-# 4. Menu Bar
+# 5. Menu Bar
 
 menu_bar = tk.Menu(root)
 root.config(menu=menu_bar)
@@ -183,7 +232,6 @@ file_menu.add_separator()
 # Export Submenu
 
 export_menu = tk.Menu(file_menu, tearoff=0)
-
 export_menu.add_command(
     label="Export Notes",
     command=save_notes
@@ -245,18 +293,22 @@ root.bind("<Control-c>", lambda event: copy_text())
 root.bind("<Control-v>", lambda event: paste_text())
 root.bind("<Control-a>", lambda event: select_all())
 
-# 5. Header
+# 6. Header
 
 header_frame = tk.Frame(main_frame, bg="lightgreen")
 header_frame.pack(fill="x", padx=10, pady=5)
 
-tk.Label(
+title_label = tk.Label(
     header_frame,
     text="Python GUI Calculator",
     font=("Arial", 20, "bold"),
     fg="#154360",
     bg="lightgreen"
-).pack(pady=10)
+)
+title_label.pack(pady=10)
+
+# Double-click the title to reset the calculator
+title_label.bind("<Double-Button-1>", title_double_click)
 
 description_label = tk.Label(
     header_frame,
@@ -268,7 +320,7 @@ description_label = tk.Label(
 )
 description_label.pack(pady=5)
 
-# 6. Input Fields
+# 7. Input Fields
 
 input_frame = tk.Frame(main_frame, bg="lightgreen")
 input_frame.pack(pady=10)
@@ -291,7 +343,7 @@ tk.Label(
 second_entry = tk.Entry(input_frame, width=25, justify="center")
 second_entry.grid(row=1, column=1, padx=5, pady=5)
 
-# 7. Operation Dropdown
+# 8. Operation Dropdown
 
 operations = [
     "Addition (+)",
@@ -309,7 +361,7 @@ operation_combo = ttk.Combobox(
 operation_combo.pack(pady=10)
 operation_combo.current(0)
 
-# 8. Spinbox - Quantity
+# 9. Spinbox - Quantity
 
 tk.Label(
     main_frame,
@@ -328,7 +380,7 @@ quantity_spinbox = tk.Spinbox(
 )
 quantity_spinbox.pack(pady=5)
 
-# 9. Checkbuttons
+# 10. Checkbuttons
 
 options_frame = tk.Frame(main_frame, bg="lightgreen")
 options_frame.pack(pady=5)
@@ -350,7 +402,7 @@ tk.Checkbutton(
     bg="lightgreen"
 ).pack(side="left", padx=5)
 
-# 10. Scale - Precision
+# 11. Scale - Precision
 
 precision_var = tk.IntVar(value=2)
 
@@ -382,7 +434,7 @@ precision_scale = tk.Scale(
 )
 precision_scale.pack(pady=5)
 
-# 11. Result
+# 12. Result
 
 result_label = tk.Label(
     main_frame,
@@ -396,7 +448,7 @@ result_label = tk.Label(
 )
 result_label.pack(pady=10)
 
-# 12. Calculation History
+# 13. Calculation History
 
 tk.Label(
     main_frame,
@@ -421,7 +473,7 @@ def show_history(event):
 
 history_listbox.bind("<<ListboxSelect>>", show_history)
 
-# 13. Calculator Function
+# 14. Calculator Function
 
 def calculate():
     try:
@@ -482,7 +534,7 @@ def calculate():
         )
 
 
-# 14. Clear and History Functions
+# 15. Clear and History Functions
 
 def clear_fields():
     if messagebox.askyesno("Clear", "Clear calculator fields?"):
@@ -504,7 +556,7 @@ def remove_history():
             history_listbox.delete(index)
 
 
-# 15. Calculator Buttons
+# 16. Calculator Buttons
 
 button_frame = tk.Frame(main_frame, bg="lightgreen")
 button_frame.pack(pady=5)
@@ -538,7 +590,7 @@ tk.Button(
     command=clear_history
 ).pack(side="left", padx=5)
 
-# 16. Notes Editor
+# 17. Notes Editor
 
 notes_frame = tk.Frame(
     main_frame,
@@ -614,7 +666,41 @@ tk.Button(
     command=unlock_notes
 ).pack(side="left", padx=3)
 
-# 17. Footer
+# 18. Event Status
+
+event_status_label = tk.Label(
+    main_frame,
+    text="Event Status: Waiting for user action",
+    bg="white",
+    fg="#154360",
+    font=("Arial", 9),
+    width=50,
+    wraplength=400
+)
+event_status_label.pack(pady=10)
+
+# 19. Event Bindings
+
+# Mouse Events
+root.bind("<Button-1>", mouse_click)
+root.bind("<Button-3>", right_click)
+root.bind("<Motion>", mouse_move)
+
+# Keyboard Events
+root.bind("<KeyPress>", key_press)
+root.bind("<KeyRelease>", key_release)
+
+# Focus Events
+first_entry.bind("<FocusIn>", focus_in)
+first_entry.bind("<FocusOut>", focus_out)
+
+second_entry.bind("<FocusIn>", focus_in)
+second_entry.bind("<FocusOut>", focus_out)
+
+notes_text.bind("<FocusIn>", focus_in)
+notes_text.bind("<FocusOut>", focus_out)
+
+# 20. Footer
 
 tk.Button(
     main_frame,
@@ -623,6 +709,6 @@ tk.Button(
     command=close_calculator
 ).pack(pady=15)
 
-# 18. Event Loop
+# 21. Event Loop
 
 root.mainloop()
