@@ -301,7 +301,7 @@ python GUI_Calculator.py
 * [x] 16_Menus
 * [x] 17_File_Dialogs
 * [x] 18_Events
-* [ ] 19_Callbacks
+* [x] 19_Callbacks
 * [ ] 20_Multiple_Windows
 * [ ] 21_Tkinter_Variables
 * [ ] 22_TTK_Widgets
