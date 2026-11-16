@@ -88,6 +88,10 @@ def title_double_click(event):
 
 # 4. Calculator and Menu Functions
 
+def show_callback_message(title, message):
+    messagebox.showinfo(title, message)
+
+
 def new_calculation():
     first_entry.delete(0, tk.END)
     second_entry.delete(0, tk.END)
@@ -573,6 +577,15 @@ tk.Button(
     text="Clear",
     command=clear_fields,
     bg="orange"
+).pack(side="left", padx=5)
+
+# Lambda passes arguments to the callback function
+tk.Button(
+    button_frame,
+    text="Callback Demo",
+    command=lambda: show_callback_message(
+        "Callback", "This button called a function with arguments."
+    )
 ).pack(side="left", padx=5)
 
 history_buttons = tk.Frame(main_frame, bg="lightgreen")
