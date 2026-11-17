@@ -1,4 +1,3 @@
-
 import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
 
@@ -9,6 +8,10 @@ root.title("Python GUI Calculator")
 root.geometry("500x850")
 root.configure(bg="lightgreen")
 root.minsize(350, 600)
+
+# Reference to the secondary (Settings) window.
+# None means the window is not currently open.
+settings_window = None
 
 # 2. Scrollable Area
 
@@ -196,7 +199,144 @@ def clear_history():
 
 def close_calculator():
     if messagebox.askyesno("Exit", "Do you want to close the calculator?"):
+        # Destroying root also destroys any open child windows
         root.destroy()
+
+
+# 4A. Multiple Windows - Settings Window (Toplevel)
+
+def open_settings(event=None):
+    global settings_window
+
+    # Prevent duplicate windows: bring the existing one to the front
+    if settings_window is not None and settings_window.winfo_exists():
+        settings_window.lift()
+        settings_window.focus_force()
+        return
+
+    # Create a child window
+    settings_window = tk.Toplevel(root)
+    settings_window.title("Calculator Settings")
+    settings_window.geometry("320x300")
+    settings_window.resizable(False, False)
+    settings_window.configure(bg="lightgreen")
+
+    # Make it behave like a dialog
+    settings_window.transient(root)
+    settings_window.grab_set()
+
+    tk.Label(
+        settings_window,
+        text="Settings Window",
+        font=("Arial", 16, "bold"),
+        fg="#154360",
+        bg="lightgreen"
+    ).pack(pady=15)
+
+    # Values copied from the main window into the settings window
+    name_var = tk.StringVar(value=user_name_var.get())
+    decimals_var = tk.IntVar(value=precision_var.get())
+    round_setting_var = tk.BooleanVar(value=round_var.get())
+
+    tk.Label(
+        settings_window,
+        text="Enter your name:",
+        bg="lightgreen"
+    ).pack()
+
+    name_input = tk.Entry(
+        settings_window,
+        textvariable=name_var,
+        justify="center"
+    )
+    name_input.pack(pady=5)
+    name_input.focus_set()
+
+    tk.Label(
+        settings_window,
+        text="Default decimal places:",
+        bg="lightgreen"
+    ).pack(pady=(10, 0))
+
+    tk.Spinbox(
+        settings_window,
+        from_=0,
+        to=5,
+        textvariable=decimals_var,
+        width=8,
+        justify="center"
+    ).pack(pady=5)
+
+    tk.Checkbutton(
+        settings_window,
+        text="Round results by default",
+        variable=round_setting_var,
+        bg="lightgreen"
+    ).pack(pady=5)
+
+    # Pass data back to the main window
+    def save_settings():
+        try:
+            decimals = int(decimals_var.get())
+        except (tk.TclError, ValueError):
+            messagebox.showerror(
+                "Invalid Input",
+                "Decimal places must be a whole number between 0 and 5.",
+                parent=settings_window
+            )
+            return
+
+        if not 0 <= decimals <= 5:
+            messagebox.showerror(
+                "Invalid Input",
+                "Decimal places must be between 0 and 5.",
+                parent=settings_window
+            )
+            return
+
+        # Update main window values
+        user_name_var.set(name_var.get().strip())
+        precision_scale.set(decimals)
+        round_var.set(round_setting_var.get())
+        update_greeting()
+
+        event_status_label.config(text="Settings saved from Settings window")
+        close_settings()
+
+    # Close the secondary window
+    def close_settings():
+        global settings_window
+
+        if settings_window is not None and settings_window.winfo_exists():
+            settings_window.grab_release()
+            settings_window.destroy()
+
+        settings_window = None
+        root.focus_force()
+
+    buttons_row = tk.Frame(settings_window, bg="lightgreen")
+    buttons_row.pack(pady=15)
+
+    tk.Button(
+        buttons_row,
+        text="Save",
+        width=8,
+        bg="lightblue",
+        command=save_settings
+    ).pack(side="left", padx=5)
+
+    tk.Button(
+        buttons_row,
+        text="Close",
+        width=8,
+        bg="orange",
+        command=close_settings
+    ).pack(side="left", padx=5)
+
+    # Window close button (X) and keyboard shortcuts
+    settings_window.protocol("WM_DELETE_WINDOW", close_settings)
+    settings_window.bind("<Return>", lambda e: save_settings())
+    settings_window.bind("<Escape>", lambda e: close_settings())
 
 
 # 5. Menu Bar
@@ -273,6 +413,17 @@ view_menu.add_command(label="Clear History", command=clear_history)
 
 menu_bar.add_cascade(label="View", menu=view_menu)
 
+# Window Menu (opens the secondary window)
+
+window_menu = tk.Menu(menu_bar, tearoff=0)
+window_menu.add_command(
+    label="Settings",
+    command=open_settings,
+    accelerator="Ctrl+T"
+)
+
+menu_bar.add_cascade(label="Window", menu=window_menu)
+
 # Help Menu
 
 help_menu = tk.Menu(menu_bar, tearoff=0)
@@ -296,6 +447,7 @@ root.bind("<Control-x>", lambda event: cut_text())
 root.bind("<Control-c>", lambda event: copy_text())
 root.bind("<Control-v>", lambda event: paste_text())
 root.bind("<Control-a>", lambda event: select_all())
+root.bind("<Control-t>", open_settings)
 
 # 6. Header
 
@@ -313,6 +465,28 @@ title_label.pack(pady=10)
 
 # Double-click the title to reset the calculator
 title_label.bind("<Double-Button-1>", title_double_click)
+
+# Name entered in the Settings window is shown here
+user_name_var = tk.StringVar(value="")
+
+greeting_label = tk.Label(
+    header_frame,
+    text="Welcome! Open Settings to enter your name.",
+    font=("Arial", 11, "italic"),
+    fg="#154360",
+    bg="lightgreen"
+)
+greeting_label.pack()
+
+
+def update_greeting():
+    name = user_name_var.get()
+
+    if name:
+        greeting_label.config(text=f"Welcome, {name}!")
+    else:
+        greeting_label.config(text="Welcome! Open Settings to enter your name.")
+
 
 description_label = tk.Label(
     header_frame,
@@ -586,6 +760,14 @@ tk.Button(
     command=lambda: show_callback_message(
         "Callback", "This button called a function with arguments."
     )
+).pack(side="left", padx=5)
+
+# Opens the secondary Settings window
+tk.Button(
+    button_frame,
+    text="Settings",
+    command=open_settings,
+    bg="khaki"
 ).pack(side="left", padx=5)
 
 history_buttons = tk.Frame(main_frame, bg="lightgreen")
